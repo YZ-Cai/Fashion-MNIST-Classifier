@@ -77,7 +77,7 @@ class Model:
         return y_pred
         
         
-    def backward(self, y, y_pred):
+    def backward(self, labels, y_pred):
         """
         Backward pass through the network
         """
@@ -86,6 +86,10 @@ class Model:
         self._dzs = [None for z in self._zs]
         self._dweights = [None for w in self._weights]
         self._dbiases = [None for b in self._biases]
+        
+        # one-hot encoding of labels
+        y = np.zeros((labels.size, 10))
+        y[np.arange(labels.size), labels] = 1
         batch_size = y.shape[0]
         
         # calculate gradients
@@ -98,10 +102,10 @@ class Model:
             self._dbiases[i-1] = np.mean(self._dzs[i-1], axis=0)
             
     
-    def step(self, lr, lambda_):
+    def step(self, lr, l2_reg):
         """
         Update weights and biases
         """
         for i in range(self._num_hidden_layers+1):
-            self._weights[i] -= lr * (self._dweights[i] + lambda_ * self._weights[i])
+            self._weights[i] -= lr * (self._dweights[i] + l2_reg * self._weights[i])
             self._biases[i] -= lr * self._dbiases[i]
