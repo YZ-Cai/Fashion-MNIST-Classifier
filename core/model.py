@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 
 
@@ -8,10 +9,9 @@ class Model:
         self._num_hidden_layers = len(hidden_sizes)
         self._output_size = output_size
         self._activation_type = activation_type
-        self._init_params()
         
         
-    def _init_params(self):
+    def init_params(self):
         """
         Initialize weights and biases for the network
         """
@@ -25,6 +25,14 @@ class Model:
             self._biases.append(np.random.randn(self._hidden_sizes[i]))
         self._weights.append(np.random.randn(self._hidden_sizes[-1], self._output_size))
         self._biases.append(np.random.randn(self._output_size))
+            
+    
+    def load(self, model_path):
+        self._weights, self._biases = pickle.load(open(model_path, 'rb'))
+    
+    
+    def save(self, model_path):
+        pickle.dump((self._weights, self._biases), open(model_path, 'wb'))
 
 
     def _activate(self, input):

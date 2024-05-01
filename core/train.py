@@ -6,10 +6,11 @@ from core.test import test
 
 
 
-def train(dataset: Dataset, model: Model, train_ratio=0.9, batch_size=1024, num_epoch=50, init_lr=2e-3, gamma=0.95, l2_reg=1e-4):
+def train(dataset: Dataset, model: Model, model_path, train_ratio=0.95, batch_size=1024, num_epoch=20, init_lr=2e-3, gamma=0.95, l2_reg=1e-4):
     
-    # validation data
+    # validation for saving the best model
     val_images, val_labels = dataset.split_validation_data(train_ratio)
+    best_val_accuracy = 0
 
     # iterate each epoch
     for epoch in range(num_epoch):
@@ -46,3 +47,6 @@ def train(dataset: Dataset, model: Model, train_ratio=0.9, batch_size=1024, num_
         val_accuracy = test(val_images, val_labels, model)
         progress_bar.set_postfix({'Train loss': np.mean(np.array(losses)), 'Train accuracy': np.mean(np.array(accuracies)), 'Val accuracy': val_accuracy})
         progress_bar.update(1)
+        if val_accuracy > best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            model.save(model_path)
