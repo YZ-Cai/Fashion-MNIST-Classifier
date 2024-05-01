@@ -86,7 +86,7 @@ def plot_curves(file_prefix):
     Plot loss and accuracy curves
     """
     df_loss_accuracy = pd.read_csv(file_prefix+'.csv')
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3.5))
 
     # loss curve
     ax1.plot(df_loss_accuracy['epoch'], df_loss_accuracy['train_loss'], label='Train Loss')
@@ -103,4 +103,4 @@ def plot_curves(file_prefix):
     ax2.set_title('Validation Accuracy')
 
     plt.tight_layout()
-    plt.savefig(file_prefix+'.png')
+    plt.savefig(file_prefix+'_loss_acc.png')

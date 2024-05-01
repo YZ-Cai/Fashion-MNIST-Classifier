@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Model:
@@ -114,3 +115,37 @@ class Model:
         for i in range(self._num_hidden_layers+1):
             self._weights[i] -= lr * (self._dweights[i] + l2_reg * self._weights[i])
             self._biases[i] -= lr * self._dbiases[i]
+            
+            
+    def plot_weights(self, file_prefix, dataset):
+        """
+        Plot weights
+        """
+        
+        # reshape multiplied weights
+        weights = self._weights[0] + self._biases[0]
+        for i in range(1, self._num_hidden_layers+1):
+            weights = weights @ self._weights[i] + self._biases[i]
+        weights = weights.reshape(int(np.sqrt(self._input_size)), int(np.sqrt(self._input_size)), self._output_size)
+        
+        # plot weights and samples for each class
+        plt.figure(figsize=(10, 20))
+        for i in range(self._output_size):
+            plt.subplot(self._output_size, 6, 6*i+1)
+            
+            # plot weights
+            plt.imshow(weights[:, :, i], vmin=0)
+            plt.title(f'Class {i} weights')
+            plt.axis('off')
+            
+            # plot samples
+            images, labels = dataset.get_all_data()
+            samples = images[labels == i]
+            for j in range(5):
+                plt.subplot(self._output_size, 6, 6*i+j+2)
+                plt.imshow(samples[j].reshape(28, 28), cmap='gray')
+                plt.axis('off')
+            
+        # save
+        plt.tight_layout()
+        plt.savefig(f'{file_prefix}_weights_samples.png')

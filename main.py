@@ -12,9 +12,9 @@ np.random.seed(0)
 # configs
 hidden_sizes = [512, 128]
 activation_type = 'relu'
-init_lr=2e-3
+init_lr=1e-3
 gamma=0.95
-l2_reg=1e-4
+l2_reg=1e-3
 train_ratio = 0.95
 
 # Load fashion MNIST dataset
@@ -29,9 +29,12 @@ model.init_params()
 # train the model
 file_prefix = f'./outputs/hidden{hidden_sizes}_lr{init_lr}_gamma{gamma}_l2{l2_reg}'
 train(train_dataset, model, val_images, val_labels, file_prefix, init_lr=init_lr, gamma=gamma, l2_reg=l2_reg)
-plot_curves(file_prefix)
 
 # test the model
 model.load(file_prefix+'.pkl')
 test_loss, test_accuracy = test(test_images, test_labels, model)
 print(f'\nTest accuracy: {test_accuracy*100:.1f}%')
+
+# plot loss and accuracy curves, and model weights
+plot_curves(file_prefix)
+model.plot_weights(file_prefix, train_dataset)
