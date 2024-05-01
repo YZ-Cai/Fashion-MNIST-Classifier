@@ -1,5 +1,5 @@
 import numpy as np
-from core.utils import Dataset
+from core.utils import Dataset, plot_curves
 from core.model import Model
 from core.train import train
 from core.test import test
@@ -29,6 +29,7 @@ model.init_params()
 # train the model
 file_prefix = f'./outputs/hidden{hidden_sizes}_lr{init_lr}_gamma{gamma}_l2{l2_reg}'
 train(train_dataset, model, val_images, val_labels, file_prefix, init_lr=init_lr, gamma=gamma, l2_reg=l2_reg)
+plot_curves(file_prefix)
 
 # test the model
 model.load(file_prefix+'.pkl')
