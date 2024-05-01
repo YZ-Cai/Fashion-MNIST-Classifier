@@ -27,12 +27,12 @@ class Model:
         self._biases.append(np.random.randn(self._output_size))
             
     
-    def load(self, model_path):
-        self._weights, self._biases = pickle.load(open(model_path, 'rb'))
+    def load(self, model_file):
+        self._weights, self._biases = pickle.load(open(model_file, 'rb'))
     
     
-    def save(self, model_path):
-        pickle.dump((self._weights, self._biases), open(model_path, 'wb'))
+    def save(self, model_file):
+        pickle.dump((self._weights, self._biases), open(model_file, 'wb'))
 
 
     def _activate(self, input):

@@ -32,6 +32,13 @@ class Dataset:
         """
         Split data into training and validation sets, return validation data
         """
+        
+        # shuffle data
+        idx = np.random.permutation(len(self._labels))
+        self._images = self._images[idx]
+        self._labels = self._labels[idx]
+        
+        # split data
         self._num_train = int(len(self._labels) * train_ratio)
         self._train_images = self._images[:self._num_train]
         self._train_labels = self._labels[:self._num_train]
