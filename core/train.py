@@ -7,10 +7,9 @@ from core.test import test
 
 
 
-def train(dataset: Dataset, model: Model, file_prefix, train_ratio=0.95, batch_size=1024, num_epoch=20, init_lr=2e-3, gamma=0.95, l2_reg=1e-4):
+def train(dataset: Dataset, model: Model, val_images, val_labels, file_prefix, batch_size=1024, num_epoch=32, init_lr=2e-3, gamma=0.95, l2_reg=1e-4):
     
     # validation for saving the best model
-    val_images, val_labels = dataset.split_validation_data(train_ratio)
     best_val_accuracy = 0
     df_loss_accuracy = pd.DataFrame()
 

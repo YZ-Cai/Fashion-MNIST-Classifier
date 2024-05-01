@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Model:
-    def __init__(self, input_size, hidden_sizes, activation_type, output_size):
+    def __init__(self, input_size, hidden_sizes, output_size, activation_type='relu'):
         self._input_size = input_size
         self._hidden_sizes = hidden_sizes
         self._num_hidden_layers = len(hidden_sizes)
