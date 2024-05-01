@@ -1,23 +1,28 @@
 import numpy as np
-from core.utils import cross_entropy_loss, Dataset
+from tqdm import tqdm
+from core.utils import Dataset, cross_entropy_loss
 from core.model import Model
+from core.test import test
 
 
 
-def train(dataset: Dataset, model: Model, train_ratio=0.8, batch_size=1024, init_lr=1e-5, l2_reg=0.0):
+def train(dataset: Dataset, model: Model, train_ratio=0.9, batch_size=1024, num_epoch=50, init_lr=2e-3, gamma=0.95, l2_reg=1e-4):
     
-    # split training and validation data
+    # validation data
     val_images, val_labels = dataset.split_validation_data(train_ratio)
-    
+
     # iterate each epoch
-    for epoch in range(100):
-        dataset.init_batch(batch_size)
+    for epoch in range(num_epoch):
+        num_batch = dataset.init_batch(batch_size)
+        losses, accuracies = [], []
+        
+        # learning rate decay
+        lr = init_lr * (gamma**epoch)
         
         # iterate each batch
-        while True:
-            images, labels = dataset.get_batch_data()
-            if images is None:
-                break
+        progress_bar = tqdm(total=num_batch+1, desc=f'Epoch {epoch+1}')
+        for idx in range(num_batch):
+            images, labels = dataset.get_batch_data(idx)
             
             # forward pass
             y_pred = model.forward(images)
@@ -29,8 +34,15 @@ def train(dataset: Dataset, model: Model, train_ratio=0.8, batch_size=1024, init
             
             # backward pass and update weights
             model.backward(labels, y_pred)
-            model.step(init_lr, l2_reg)
-            print(f'Epoch {epoch+1}. Train loss: {loss:.2f}, train accuracy: {accuracy*100:.1f}%', end='\r')
+            model.step(lr, l2_reg)
+            
+            # record loss and accuracy
+            losses.append(loss)
+            accuracies.append(accuracy)
+            progress_bar.set_postfix({'Train loss': loss, 'Train accuracy': accuracy})
+            progress_bar.update(1)
         
         # validation
-        print(f'Epoch {epoch+1}. Train loss: {loss:.2f}, train accuracy: {accuracy*100:.1f}%')
+        val_accuracy = test(val_images, val_labels, model)
+        progress_bar.set_postfix({'Train loss': np.mean(np.array(losses)), 'Train accuracy': np.mean(np.array(accuracies)), 'Val accuracy': val_accuracy})
+        progress_bar.update(1)

@@ -13,18 +13,12 @@ class Dataset:
         Load MNIST data from `path`
         Codes from: https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py
         """
-        labels_path = os.path.join(data_path,
-                                '%s-labels-idx1-ubyte.gz'
-                                % kind)
-        images_path = os.path.join(data_path,
-                                '%s-images-idx3-ubyte.gz'
-                                % kind)
+        labels_path = os.path.join(data_path, '%s-labels-idx1-ubyte.gz' % kind)
+        images_path = os.path.join(data_path, '%s-images-idx3-ubyte.gz' % kind)
         with gzip.open(labels_path, 'rb') as lbpath:
-            self._labels = np.frombuffer(lbpath.read(), dtype=np.uint8,
-                                offset=8)
+            self._labels = np.frombuffer(lbpath.read(), dtype=np.uint8, offset=8)
         with gzip.open(images_path, 'rb') as imgpath:
-            self._images = np.frombuffer(imgpath.read(), dtype=np.uint8,
-                                offset=16).reshape(len(self._labels), self.x_dim)
+            self._images = np.frombuffer(imgpath.read(), dtype=np.uint8, offset=16).reshape(len(self._labels), self.x_dim) / 255.0
     
     
     def get_all_data(self):
@@ -36,7 +30,7 @@ class Dataset:
     
     def split_validation_data(self, train_ratio=0.8):
         """
-        Split data into training and validation sets
+        Split data into training and validation sets, return validation data
         """
         self._num_train = int(len(self._labels) * train_ratio)
         self._train_images = self._images[:self._num_train]
@@ -46,7 +40,7 @@ class Dataset:
     
     def init_batch(self, batch_size=128):
         """
-        Initialize batch data
+        Initialize batch data, return number of batches
         """
         
         # shuffle training data
@@ -55,20 +49,16 @@ class Dataset:
         self._train_labels = self._train_labels[idx]
         
         # init for first batch
-        self._idx = 0
         self._batch_size = batch_size
-        self._num_batches = self._num_train // batch_size
+        return self._num_train // batch_size
     
     
-    def get_batch_data(self):
+    def get_batch_data(self, idx):
         """
-        Get batch data
+        Get batch data given batch idx
         """
-        if self._idx >= self._num_batches:
-            return None, None
-        start = self._idx * self._batch_size
+        start = idx * self._batch_size
         end = start + self._batch_size
-        self._idx += 1
         return self._train_images[start:end], self._train_labels[start:end]
 
 
