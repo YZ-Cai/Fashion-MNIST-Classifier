@@ -129,9 +129,9 @@ class Model:
         weights = weights.reshape(int(np.sqrt(self._input_size)), int(np.sqrt(self._input_size)), self._output_size)
         
         # plot weights and samples for each class
-        plt.figure(figsize=(10, 20))
+        plt.figure(figsize=(10, 15))
         for i in range(self._output_size):
-            plt.subplot(self._output_size, 6, 6*i+1)
+            plt.subplot(self._output_size, 8, 8*i+1)
             
             # plot weights
             plt.imshow(weights[:, :, i], vmin=0)
@@ -141,8 +141,8 @@ class Model:
             # plot samples
             images, labels = dataset.get_all_data()
             samples = images[labels == i]
-            for j in range(5):
-                plt.subplot(self._output_size, 6, 6*i+j+2)
+            for j in range(7):
+                plt.subplot(self._output_size, 8, 8*i+j+2)
                 plt.imshow(samples[j].reshape(28, 28), cmap='gray')
                 plt.axis('off')
             
